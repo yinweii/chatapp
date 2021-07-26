@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatapp/widget/fullimage_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -43,9 +45,9 @@ class _ChatState extends State<Chat> {
     preferences = await SharedPreferences.getInstance();
     id = preferences!.getString('id');
     if (id.hashCode <= widget.receiverId.hashCode) {
-      chatId = '$id-$widget.receiverId';
+      chatId = '$id-${widget.receiverId}';
     } else {
-      chatId = '$widget.receiverId-$id';
+      chatId = '${widget.receiverId}-$id';
     }
     // get
     FirebaseFirestore.instance
@@ -67,13 +69,10 @@ class _ChatState extends State<Chat> {
             children: [
               //List of message
               createListMessage(),
-              //show sticker
-              //(isDisPlaySticker ? createSticker() : Container()),
               //input text
               createInput(),
             ],
           ),
-          //createloading(),
         ],
       ),
     );
@@ -107,7 +106,7 @@ class _ChatState extends State<Chat> {
                   Icons.image,
                   color: Colors.lightBlueAccent,
                 ),
-                onPressed: () {},
+                onPressed: getImage,
               ),
               color: Colors.white,
             ),
@@ -120,7 +119,7 @@ class _ChatState extends State<Chat> {
                   Icons.add_a_photo,
                   color: Colors.lightBlueAccent,
                 ),
-                onPressed: () {},
+                onPressed: takeImageFromCamera,
               ),
               color: Colors.white,
             ),
@@ -236,7 +235,65 @@ class _ChatState extends State<Chat> {
                         fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 )
-              : Container(),
+              //image
+              : document['type'] == 1
+                  ? Container(
+                      margin: EdgeInsets.only(
+                          bottom: isLastMsgRight(index) ? 20 : 10, right: 10),
+                      child: FlatButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FullImage(
+                                url: document['content'],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Material(
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) => Container(
+                              padding: EdgeInsets.all(70),
+                              height: 200,
+                              width: 200,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation(
+                                  Colors.lightBlueAccent,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Material(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                              child: Image.asset(
+                                'images/img_not_av.jpeg',
+                                height: 200,
+                                width: 200,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            imageUrl: document['content'],
+                            width: 200,
+                            height: 200,
+                            fit: BoxFit.cover,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8),
+                          ),
+                          clipBehavior: Clip.hardEdge,
+                        ),
+                      ),
+                    )
+                  : Container(),
         ],
       );
     } else {
@@ -344,5 +401,51 @@ class _ChatState extends State<Chat> {
     } else {
       Fluttertoast.showToast(msg: "Can't not send message");
     }
+  }
+
+  Future getImage() async {
+    PickedFile? photo =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    setState(() {
+      imageFile = File(photo!.path);
+    });
+    if (imageFile != null) {
+      isLoading = false;
+    }
+    upLoadImageFile();
+  }
+
+  Future takeImageFromCamera() async {
+    PickedFile? photo = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+
+    setState(() {
+      imageFile = File(photo!.path);
+    });
+    if (imageFile != null) {
+      isLoading = false;
+    }
+    upLoadImageFile();
+  }
+
+  Future upLoadImageFile() async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    String fileName = DateTime.now().microsecondsSinceEpoch.toString();
+    Reference ref = storage.ref().child('ChatImage').child(fileName);
+    UploadTask uploadTask = ref.putFile(imageFile!);
+    uploadTask.then((TaskSnapshot taskSnapshot) {
+      taskSnapshot.ref.getDownloadURL().then((value) {
+        setState(() {
+          imageUrl = value;
+          isLoading = false;
+          onSendMessage(imageUrl!, 1);
+        });
+      });
+    }).catchError((error) {
+      Fluttertoast.showToast(msg: '${error.toString()}');
+    });
   }
 }
