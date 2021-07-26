@@ -1,4 +1,3 @@
-import 'package:chatapp/model/user.dart';
 import 'package:chatapp/screen/login_screen.dart';
 import 'package:chatapp/widget/chatuseritem_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   CollectionReference userList = FirebaseFirestore.instance.collection('users');
   List userInServer = [];
+  TextEditingController searchTextEditingController = TextEditingController();
 
   //get data
   Future getUserList() async {
@@ -53,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+// list user
   displayUser() {
     return ListView.builder(
       itemCount: userInServer.length,
@@ -68,6 +69,17 @@ class _HomeScreenState extends State<HomeScreen> {
 //build home page header
   buildHomePageHeader() {
     return AppBar(
+      leading: Center(
+        child: Text(
+          'CHAT',
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              letterSpacing: 2,
+              fontFamily: 'Anton'),
+        ),
+      ),
       actions: [
         IconButton(
             icon: Icon(
@@ -77,42 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             onPressed: () {
               signOut();
-              // Navigator.of(context).pushReplacement(
-              //     MaterialPageRoute(builder: (context) => LogInScreen()));
             }),
       ],
-      backgroundColor: Colors.lightBlue,
-      title: Container(
-        margin: EdgeInsets.only(bottom: 4),
-        child: TextFormField(
-          style: TextStyle(fontSize: 20, color: Colors.white),
-
-          decoration: InputDecoration(
-            hintText: 'Search',
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-            ),
-            filled: true,
-            prefixIcon: Icon(
-              Icons.person_pin,
-              color: Colors.white,
-              size: 30,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                Icons.clear,
-                color: Colors.white,
-                size: 30,
-              ),
-              onPressed: () {},
-            ),
-          ),
-          //onFieldSubmitted: ,
-        ),
-      ),
     );
   }
 

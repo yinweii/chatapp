@@ -12,7 +12,8 @@ class FullImage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.lightBlue,
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text('full image'),
+        title: Text('Image'),
+        centerTitle: true,
       ),
       body: FullPhotoScreen(url: url),
     );

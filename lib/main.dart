@@ -1,6 +1,4 @@
-import 'package:chatapp/screen/home_screen.dart';
 import 'package:chatapp/screen/login_screen.dart';
-import 'package:chatapp/screen/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -16,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primaryColor: Colors.teal),
+      theme: ThemeData(primaryColor: Colors.lightBlue),
       debugShowCheckedModeBanner: false,
       home: LogInScreen(),
     );

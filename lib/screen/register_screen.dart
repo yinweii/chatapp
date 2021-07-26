@@ -1,8 +1,7 @@
 import 'dart:io';
-
 import 'package:chatapp/screen/home_screen.dart';
 import 'package:chatapp/screen/login_screen.dart';
-import 'package:chatapp/utils/global.dart';
+import 'package:chatapp/services/validator.dart';
 import 'package:chatapp/widget/custombuttom_widget.dart';
 import 'package:chatapp/widget/customtextfield_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,27 +25,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController _passwordController = TextEditingController();
   String userImageUrl = '';
   FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseStorage storage = FirebaseStorage.instance;
+  Validator validator = Validator();
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   File? imageAvata;
   bool _isChecked = true;
-  //validate emmail
-  String? validateEmail(inputEmail) {
-    if (inputEmail.isEmpty) return 'Email is not emty';
-    String pattern =
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
-
-    RegExp regExp = RegExp(pattern);
-    if (!regExp.hasMatch(inputEmail)) return 'Invalid Email address format';
-    return null;
-  }
-
-  //validate pass
-  String? validatePassword(password) {
-    if (password.isEmpty) return 'Password is not empty';
-    if (password.length <= 6) return 'Password is required';
-    return null;
-  }
 
 //get image form gallery
   Future getImage() async {
@@ -67,9 +51,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: SingleChildScrollView(
           child: Container(
             height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              color: Colors.teal,
-            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
               child: Column(
@@ -92,112 +73,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                   SizedBox(height: 30),
-                  /*CustomTextField(
-                          lable: 'Name',
-                          preIcon: Icon(
-                            Icons.person,
-                            color: Colors.white,
-                          ),
-                          hintext: 'User name',
-                          obstype: false,
-                          validator: () {},
-                        ),
-                        CustomTextField(
-                          lable: 'Email',
-                          preIcon: Icon(
-                            Icons.mail,
-                            color: Colors.white,
-                          ),
-                          hintext: 'Enter your email',
-                          obstype: false,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'email not empty';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        CustomTextField(
-                          lable: 'Password',
-                          preIcon: Icon(
-                            Icons.lock,
-                            color: Colors.white,
-                          ),
-                          sufIcon: IconButton(
-                              onPressed: _onToggePass,
-                              icon: Icon(
-                                _isChecked ? Icons.visibility_off : Icons.visibility,
-                                color: Colors.white,
-                              )),
-                          hintext: 'Password',
-                          obstype: _isChecked,
-                          validator: () {},
-                        ), */
-                  TextFormField(
+                  CustomTextField(
+                    lable: 'Name',
                     controller: _nameController,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Name is not empty';
-                      }
-                      return null;
-                    },
-                    obscureText: false,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.white, width: 1)),
-                      hintText: 'Name',
-                      hintStyle: kHintTextStyle,
-                      prefixIcon: Icon(
-                        Icons.person,
-                        color: Colors.white,
-                      ),
+                    preIcon: Icon(
+                      Icons.person,
                     ),
+                    hintext: 'User name',
+                    obstype: false,
+                    validator: validator.validateName,
                   ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    validator: validateEmail,
+                  SizedBox(height: 30),
+                  CustomTextField(
+                    lable: 'Email',
                     controller: _emailController,
-                    obscureText: false,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.white, width: 1)),
-                      hintText: 'email',
-                      hintStyle: kHintTextStyle,
-                      prefixIcon: Icon(
-                        Icons.mail,
-                        color: Colors.white,
-                      ),
+                    preIcon: Icon(
+                      Icons.mail,
                     ),
+                    hintext: 'Enter your email',
+                    obstype: false,
+                    validator: validator.validateEmail,
                   ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    validator: validatePassword,
+                  SizedBox(height: 30),
+                  CustomTextField(
+                    lable: 'Password',
                     controller: _passwordController,
-                    obscureText: _isChecked,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.white, width: 1)),
-                      hintText: 'Password',
-                      hintStyle: kHintTextStyle,
-                      prefixIcon: Icon(
-                        Icons.lock,
-                        color: Colors.white,
-                      ),
-                      suffixIcon: IconButton(
+                    preIcon: Icon(
+                      Icons.lock,
+                    ),
+                    sufIcon: IconButton(
                         onPressed: _onToggePass,
                         icon: Icon(
                           _isChecked ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                        )),
+                    hintext: 'Password',
+                    obstype: _isChecked,
+                    validator: validator.validatePassword,
                   ),
                   SizedBox(height: 35),
                   CustomButton(
@@ -212,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('I have A Account?'),
+                      Text('I have an Account?'),
                       SizedBox(width: 10),
                       GestureDetector(
                         onTap: () {
@@ -223,7 +134,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Text(
                           'LogIn',
                           style: TextStyle(
-                              fontWeight: FontWeight.w500, color: Colors.white),
+                              fontWeight: FontWeight.w500,
+                              color: Colors.lightBlue),
                         ),
                       ),
                     ],
@@ -257,9 +169,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  //register
+  //upload user infor To FirebaseStorage
   uploadToStorage() async {
-    FirebaseStorage storage = FirebaseStorage.instance;
     String imageFileName = DateTime.now().millisecondsSinceEpoch.toString();
     Reference ref = storage.ref().child('Image').child(imageFileName);
 
@@ -277,6 +188,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
+// user register
   void _registerUser() async {
     User? firebaseUser;
 

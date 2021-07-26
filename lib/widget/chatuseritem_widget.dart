@@ -38,7 +38,10 @@ class ChatUserItem extends StatelessWidget {
               leading: CircleAvatar(
                 backgroundImage: NetworkImage(image),
               ),
-              title: Text(name),
+              title: Text(
+                name,
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ),

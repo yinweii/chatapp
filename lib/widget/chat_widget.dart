@@ -195,7 +195,7 @@ class _ChatState extends State<Chat> {
     );
   }
 
-//--------->isLastMsgLeft<-------------&& listMessage[index - 1]['idFrom' == id]
+//mesage left
   bool isLastMsgLeft(int index) {
     if ((index > 0 && listMessage != null) || index == 0) {
       return true;
@@ -204,7 +204,7 @@ class _ChatState extends State<Chat> {
     }
   }
 
-  //---->isLastMsgRight<-----------------&& listMessage[index - 1]['idFrom' == id]
+  //message right
   bool isLastMsgRight(int index) {
     if ((index > 0 && listMessage != null) || index == 0) {
       return true;
@@ -349,14 +349,71 @@ class _ChatState extends State<Chat> {
                         ),
                       )
                     : document['type'] == 1
-                        ? Container()
+                        ? Container(
+                            margin: EdgeInsets.only(
+                                bottom: isLastMsgRight(index) ? 20 : 10,
+                                right: 10),
+                            child: FlatButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FullImage(
+                                      url: document['content'],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Material(
+                                child: CachedNetworkImage(
+                                  placeholder: (context, url) => Container(
+                                    padding: EdgeInsets.all(50),
+                                    height: 200,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      ),
+                                    ),
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation(
+                                        Colors.lightBlueAccent,
+                                      ),
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Material(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8),
+                                    ),
+                                    clipBehavior: Clip.hardEdge,
+                                    child: Image.asset(
+                                      'images/img_not_av.jpeg',
+                                      height: 200,
+                                      width: 200,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  imageUrl: document['content'],
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                                clipBehavior: Clip.hardEdge,
+                              ),
+                            ),
+                          )
                         : Container(),
               ],
             ),
             //msg time
             isLastMsgLeft(index)
                 ? Container(
-                    margin: EdgeInsets.only(left: 50, top: 10, bottom: 5),
+                    margin: EdgeInsets.only(top: 1, bottom: 5),
                     child: Text(
                       DateFormat('dd MMMM,yyyy -hh:mm:aa').format(
                         DateTime.fromMillisecondsSinceEpoch(
@@ -365,7 +422,7 @@ class _ChatState extends State<Chat> {
                           ),
                         ),
                       ),
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(color: Colors.grey, fontSize: 10),
                     ),
                   )
                 : Container(),

@@ -20,7 +20,7 @@ class ChatScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.keyboard_backspace),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -28,20 +28,34 @@ class ChatScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.black,
-              backgroundImage: CachedNetworkImageProvider(receiverAvatar),
-            ),
+            child: Icon(Icons.phone),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.video_call),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.error),
           ),
         ],
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
-        title: Text(
-          receiverName,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.black,
+              backgroundImage: CachedNetworkImageProvider(receiverAvatar),
+            ),
+            SizedBox(width: 10),
+            Text(
+              receiverName,
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
-        centerTitle: true,
       ),
       body: Chat(receiverId: receiverId, receiverAvatar: receiverAvatar),
     );
