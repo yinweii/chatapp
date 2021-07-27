@@ -10,9 +10,13 @@ class Validator {
   } //validate pass
 
   String? validatePassword(password) {
+    String pattern =
+        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,30}$';
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(password)) return 'Enter valid password';
     if (password.isEmpty) return 'Password is not empty';
     if (password.length <= 6) return 'Password must be more than 6 charater';
-    if (password.length >= 32) return 'Password must be less than 32 charater';
+    if (password.length >= 30) return 'Password must be less than 30 charater';
     return null;
   }
 

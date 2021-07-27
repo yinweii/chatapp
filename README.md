@@ -1,7 +1,9 @@
 # #chatapp
-![appp](https://user-images.githubusercontent.com/51621032/126973644-54875f3f-e3f7-4cd5-b638-3b5d59725575.gif)
 
-## Libs in project  🤱:
+![chatappp](https://user-images.githubusercontent.com/51621032/127084342-2dc5aad3-84b6-4265-b1e7-d9061c417d7f.gif)
+
+## Libs in project 🤱:
+
 ```
   image_picker: ^0.8.2
   firebase_core: "^1.4.0"
@@ -14,14 +16,10 @@
   intl: ^0.17.0
   photo_view: ^0.12.0
 ```
-## How I can run it?
- ```
-flutter pub get
-flutter run
-```
-## How I can run it?
- ```
-flutter pub get
-flutter run
 
+## How I can run it?
+
+```
+flutter pub get
+flutter run
 ```

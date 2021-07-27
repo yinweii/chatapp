@@ -1,15 +1,15 @@
-class User {
-  final String id;
-  final String nickname;
-  final String email;
-  final String photoUrl;
+// class User {
+//   final String id;
+//   final String nickname;
+//   final String email;
+//   final String photoUrl;
 
-  User(
-      {required this.id,
-      required this.nickname,
-      required this.email,
-      required this.photoUrl});
-}
+//   User(
+//       {required this.id,
+//       required this.nickname,
+//       required this.email,
+//       required this.photoUrl});
+// }
 
 // List<User> listUser = [
 //   User(
